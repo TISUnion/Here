@@ -3,7 +3,7 @@ A MCDeamon plugin for broadcasting location
 
 ## Usage
 Use command below to tell everyone your location.
-> !!Here
+> !!here
 
 ## Example
 
