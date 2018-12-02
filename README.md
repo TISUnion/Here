@@ -5,6 +5,6 @@ A MCDeamon plugin for broadcasting location
 Use command below to tell everyone your location.
 > !!Here
 
-##Example
+## Example
 
 ![Example Picture](https://raw.githubusercontent.com/TISUnion/Here/master/demoimg.png)
