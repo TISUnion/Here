@@ -30,6 +30,5 @@ def onServerInfo(server, info):
       here_user-=1
   else:
     if info.content.startswith('!!here'):
-      global here_user
       here_user+=1
       server.execute("data get entity "+info.player)
