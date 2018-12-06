@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import PlayerInfoAPI
+from imp import load_source
+PlayerInfoAPI = load_source('PlayerInfoAPI','./plugins/PlayerInfoAPI.py')
 
 def onServerInfo(server, info):
   HIGHLIGHT_ENABLE = True
