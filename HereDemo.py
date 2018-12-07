@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from imp import load_source
-PlayerInfoAPI = load_source('PlayerInfoAPI','./plugins/PlayerInfoAPI.py')
+PlayerInfoAPI = load_source('PlayerInfoAPI', './plugins/PlayerInfoAPI.py')
 
 def onServerInfo(server, info):
   HIGHLIGHT_ENABLE = True
@@ -9,8 +9,8 @@ def onServerInfo(server, info):
   if info.content.startswith('!!here'):
     result = PlayerInfoAPI.getPlayerInfo(server,info.player)
     position = result["Pos"]
-    dimension = result["Dim"]
-    position_show = "["+str(position[0])+","+str(position[1])+","+str(position[2])+"]"
+    dimension = str(result["Dimension"])
+    position_show = "["+str(int(position[0]))+","+str(int(position[1]))+","+str(int(position[2]))+"]"
     server.say("§e" + info.player + "§r 在 §2" + dimension_convert[dimension] + position_show + "§r 向各位打招呼")
     if(HIGHLIGHT_ENABLE):
       server.execute("effect give "+ info.player + " minecraft:glowing 15 1 true")
