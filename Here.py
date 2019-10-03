@@ -30,7 +30,7 @@ def onServerInfo(server, info):
         dimension = re.search("(?<=Dimension: )-?\d",info.content).group()
         position_str = re.search("(?<=Pos: )\[.*?\]",info.content).group()
         position = re.findall("\[(-?\d*).*?, (-?\d*).*?, (-?\d*).*?\]",position_str)[0]
-        position_show = "["+str(position[0])+","+str(position[1])+","+str(position[2])+"]"
+        position_show = "[x:"+str(position[0])+",y:"+str(position[1])+",z:"+str(position[2])+"]"
         if(WAYPOINT_SUPPORT):
           pass
         else:
