@@ -1,68 +1,55 @@
 # -*- coding: utf-8 -*-
-
+import copy
 import re
-import time
+
+# set it to 0 to disable hightlight
+# 将其设为0以禁用高亮
+HIGHLIGHT_TIME = 15
 
 here_user = 0
-logfile = './plugins/here/'
-playerlist = []
 
-recordplayer = False
 
-def onServerStartup(server):
-  global here_user
-  here_user = 0
-  while recordplayer:
-    for player in playerlist:
-      #server.execute('data get entity ' + player)
-      time.sleep(5)
+def process_coordinate(text):
+	data = text[1:-1].replace('d', '').split(', ')
+	data = [(x + 'E0').split('E') for x in data]
+	return tuple([int(float(e[0]) * 10 ** int(e[1])) for e in data])
+
+
+def process_dimension(text):
+	return int(text.lstrip(re.match(r'[\w ]+: ', text).group()))
+
+
+def display(server, name, position, dimension):
+	global HIGHLIGHT_TIME
+	dimension_display = {0: '§2主世界', -1: '§4地狱', 1: '§5末地'}
+	position_show = '[x:{}, y:{}, z:{}]'.format(*position)
+	server.say('§e{}§r @ {} §r{}'.format(name, dimension_display[dimension], position_show))
+	if HIGHLIGHT_TIME > 0:
+		server.execute('effect give {} minecraft:glowing {} 0 true'.format(name, HIGHLIGHT_TIME))
+		server.tell(name, '你将会被高亮{}秒'.format(HIGHLIGHT_TIME))
+
+
+def on_info(server, info):
+	if info.is_player and info.content == '!!here':
+		if hasattr(server, 'MCDR') and server.is_rcon_running():
+			name = info.player
+			position = process_coordinate(re.search(r'\[.*\]', server.rcon_query('data get entity {} Pos'.format(name))).group())
+			dimension = process_dimension(server.rcon_query('data get entity {} Dimension'.format(name)))
+			display(server, name, position, dimension)
+		else:
+			global here_user
+			here_user += 1
+			server.execute('data get entity ' + info.player)
+	if not info.is_player and here_user > 0 and re.match(r'\w+ has the following entity data: ', info.content) is not None:
+		name = info.content.split(' ')[0]
+		dimension = int(re.search(r'(?<=Dimension: )-?\d', info.content).group())
+		position_str = re.search(r'(?<=Pos: )\[.*?\]', info.content).group()
+		position = process_coordinate(position_str)
+		display(server, name, position, dimension)
+		here_user -= 1
 
 
 def onServerInfo(server, info):
-  global here_user
-  WAYPOINT_SUPPORT = False
-  HIGHLIGHT_ENABLE = True
-  dimension_convert = {"0":"主世界","-1":"地狱","1":"末地"}
-  if (info.isPlayer == 0):
-    if("following entity data" in info.content):
-      if here_user>0:
-        name = info.content.split(" ")[0]
-        dimension = re.search("(?<=Dimension: )-?\d",info.content).group()
-        position_str = re.search("(?<=Pos: )\[.*?\]",info.content).group()
-        position = re.findall("\[(-?\d*).*?, (-?\d*).*?, (-?\d*).*?\]",position_str)[0]
-        position_show = "[x:"+str(position[0])+",y:"+str(position[1])+",z:"+str(position[2])+"]"
-        if(WAYPOINT_SUPPORT):
-          pass
-        else:
-          if dimension == '0':
-            server.say("§e" + name + "§r @ §2" + dimension_convert[dimension] + position_show)
-          elif dimension == '1':
-            server.say("§e" + name + "§r @ §5" + dimension_convert[dimension] + position_show)
-          elif dimension == '-1':
-            server.say("§e" + name + "§r @ §4" + dimension_convert[dimension] + position_show)
-        if(HIGHLIGHT_ENABLE):
-          server.execute("effect give "+ name + " minecraft:glowing 15 1 true")
-          server.tell(name,"您将会被高亮15秒")
-        here_user-=1
-      else:
-        name = info.content.split(" ")[0]
-        dimension = re.search("(?<=Dimension: )-?\d",info.content).group()
-        position_str = re.search("(?<=Pos: )\[.*?\]",info.content).group()
-        position = re.findall("\[(-?\d*).*?, (-?\d*).*?, (-?\d*).*?\]",position_str)[0]
-        position_show = "["+str(position[0])+","+str(position[1])+","+str(position[2])+"]"
-        nowtime = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
-        logname = time.strftime('%Y-%m-%d',time.localtime(time.time())) + '.log'
-        with open(logfile + logname,'a+') as handle:
-          handle.write(nowtime + ' : ' + name + ' is at ' + dimension_convert[dimension] + ' ' + position_show + '\n')
-  else:
-    if info.content.startswith('!!here'):
-      here_user+=1
-      server.execute("data get entity "+info.player)
-
-def onPlayerJoin(server, player):
-  global playerlist
-  playerlist.append(player)
-
-def onPlayerLeave(server, player):
-  global playerlist
-  playerlist.remove(player)
+	info2 = copy.deepcopy(info)
+	info2.is_player = info2.isPlayer
+	on_info(server, info2)
