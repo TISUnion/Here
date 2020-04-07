@@ -53,3 +53,7 @@ def onServerInfo(server, info):
 	info2 = copy.deepcopy(info)
 	info2.is_player = info2.isPlayer
 	on_info(server, info2)
+
+
+def on_load(server, old):
+	server.add_help_message('!!here', '广播坐标并高亮玩家')
