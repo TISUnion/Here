@@ -42,7 +42,7 @@ def on_info(server, info):
 			server.execute('data get entity ' + info.player)
 	if not info.is_player and here_user > 0 and re.match(r'\w+ has the following entity data: ', info.content) is not None:
 		name = info.content.split(' ')[0]
-		dimension = re.search(r'(?<=Dimension: )(.*?),', info.content).group().replace('"', '').replace(',', '')
+		dimension = re.search(r'(?<= Dimension: )(.*?),', info.content).group().replace('"', '').replace(',', '')
 		position_str = re.search(r'(?<=Pos: )\[.*?\]', info.content).group()
 		position = process_coordinate(position_str)
 		display(server, name, position, dimension)
