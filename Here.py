@@ -23,7 +23,7 @@ def display(server, name, position, dimension):
 	global HIGHLIGHT_TIME
 	dimension_display = {0: '"translate":"createWorld.customize.preset.overworld","color":"dark_green"', -1: '"translate":"advancements.nether.root.title","color":"dark_red"', 1: '"translate":"advancements.end.root.title","color":"dark_purple"', 'minecraft:overworld': '"translate":"createWorld.customize.preset.overworld","color":"dark_green"', 'minecraft:the_nether': '"translate":"advancements.nether.root.title","color":"dark_red"', 'minecraft:the_end': '"translate":"advancements.end.root.title","color":"dark_purple"'}
 	position_show = '[x:{}, y:{}, z:{}]'.format(*position)
-	server.execute('tellraw @a ["",{"text":"' + name + ' ","color":"yellow"},{"text":"@ ","color":"white"},{' + dimension_display[dimension] + '},{"text":" ' + position_show + '","color":"white"}]')
+	server.execute('tellraw @a ["",{"text":"' + name + ' ","color":"yellow"},{"text":"@ ","color":"white"},{' + dimension_display[dimension] + '},{"text":" ' + position_show + '","color":"aqua"}]')
 	if HIGHLIGHT_TIME > 0:
 		server.execute('effect give {} minecraft:glowing {} 0 true'.format(name, HIGHLIGHT_TIME))
 		server.tell(name, '你将会被高亮{}秒'.format(HIGHLIGHT_TIME))
