@@ -41,16 +41,24 @@ def display(server, name, position, dimension):
 	
 	if dimension in dimension_convert:  # convert to 1.16 format
 		dimension = dimension_convert[dimension]
-		
-	def position_display():
-		return ' §b[x:{}, y:{}, z:{}]§r'.format(int(x), int(y), int(z))
-	server.execute('tellraw @a {}'.format(json.dumps([
+	texts = [
 		'',
 		'§e{}§r @ '.format(name),
 		dimension_color[dimension],  # hacky fix for voxelmap yeeting text color in translated text 
 		dimension_display[dimension],
-		position_display()
-	])))
+		' §b[x:{}, y:{}, z:{}]§r'.format(int(x), int(y), int(z))
+	]
+	if dimension in ['0', '-1']:  # coordinate convertion between overworld and nether
+		dimension_opposite = '-1' if dimension == '0' else '0'
+		x, z = (x * 8, y * 8) if dimension == '0' else (x / 8, y / 8)
+		dimension_color[dimension_opposite],
+		texts.extend([
+			' §7->§r ',
+			dimension_color[dimension_opposite],
+			dimension_display[dimension_opposite],
+			' ({}, {}, {})'.format(int(x), int(y), int(z))
+		])
+	server.execute('tellraw @a {}'.format(json.dumps(texts)))
 	global HIGHLIGHT_TIME
 	if HIGHLIGHT_TIME > 0:
 		server.execute('effect give {} minecraft:glowing {} 0 true'.format(name, HIGHLIGHT_TIME))
