@@ -21,9 +21,9 @@ def process_dimension(text):
 
 def display(server, name, position, dimension):
 	global HIGHLIGHT_TIME
-	dimension_display = {0: '§2主世界', -1: '§4地狱', 1: '§5末地'}
+	dimension_display = {0: '"translate":"createWorld.customize.preset.overworld","color":"dark_green"', -1: '"translate":"advancements.nether.root.title","color":"dark_red"', 1: '"translate":"advancements.end.root.title","color":"dark_purple"', 'minecraft:overworld': '"translate":"createWorld.customize.preset.overworld","color":"dark_green"', 'minecraft:the_nether': '"translate":"advancements.nether.root.title","color":"dark_red"', 'minecraft:the_end': '"translate":"advancements.end.root.title","color":"dark_purple"'}
 	position_show = '[x:{}, y:{}, z:{}]'.format(*position)
-	server.say('§e{}§r @ {} §r{}'.format(name, dimension_display[dimension], position_show))
+	server.execute('tellraw @a ["",{"text":"' + name + ' ","color":"yellow"},{"text":"@ ","color":"white"},{' + dimension_display[dimension] + '},{"text":" ' + position_show + '","color":"aqua"}]')
 	if HIGHLIGHT_TIME > 0:
 		server.execute('effect give {} minecraft:glowing {} 0 true'.format(name, HIGHLIGHT_TIME))
 		server.tell(name, '你将会被高亮{}秒'.format(HIGHLIGHT_TIME))
@@ -42,7 +42,7 @@ def on_info(server, info):
 			server.execute('data get entity ' + info.player)
 	if not info.is_player and here_user > 0 and re.match(r'\w+ has the following entity data: ', info.content) is not None:
 		name = info.content.split(' ')[0]
-		dimension = int(re.search(r'(?<=Dimension: )-?\d', info.content).group())
+		dimension = re.search(r'(?<= Dimension: )(.*?),', info.content).group().replace('"', '').replace(',', '')
 		position_str = re.search(r'(?<=Pos: )\[.*?\]', info.content).group()
 		position = process_coordinate(position_str)
 		display(server, name, position, dimension)
