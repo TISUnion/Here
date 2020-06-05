@@ -50,7 +50,7 @@ def display(server, name, position, dimension):
 	]
 	if dimension in ['0', '-1']:  # coordinate convertion between overworld and nether
 		dimension_opposite = '-1' if dimension == '0' else '0'
-		x, z = (x * 8, y * 8) if dimension == '0' else (x / 8, y / 8)
+		x, z = (x * 8, z * 8) if dimension == '0' else (x / 8, z / 8)
 		dimension_color[dimension_opposite],
 		texts.extend([
 			' §7->§r ',
