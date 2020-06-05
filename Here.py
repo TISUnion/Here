@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import copy
 import re
+import json
+
 
 # set it to 0 to disable hightlight
 # 将其设为0以禁用高亮
@@ -12,7 +14,7 @@ here_user = 0
 def process_coordinate(text):
 	data = text[1:-1].replace('d', '').split(', ')
 	data = [(x + 'E0').split('E') for x in data]
-	return tuple([int(float(e[0]) * 10 ** int(e[1])) for e in data])
+	return tuple([float(e[0]) * 10 ** int(e[1]) for e in data])
 
 
 def process_dimension(text):
@@ -20,13 +22,38 @@ def process_dimension(text):
 
 
 def display(server, name, position, dimension):
+	x, y, z = position
+	dimension_convert = {
+		'minecraft:overworld': '0',
+		'minecraft:the_nether': '-1',
+		'minecraft:the_end': '1'
+	}
+	dimension_color = {
+		'0': '§2',
+		'-1': '§4',
+		'1': '§5'
+	}
+	dimension_display = {
+		'0': {'translate': 'createWorld.customize.preset.overworld'},
+		'-1': {'translate': 'advancements.nether.root.title'},
+		'1': {'translate': 'advancements.end.root.title'}
+	}
+	
+	if dimension in dimension_convert:  # convert to 1.16 format
+		dimension = dimension_convert[dimension]
+		
+	def position_display():
+		return ' §b[x:{}, y:{}, z:{}]§r'.format(int(x), int(y), int(z))
+	server.execute('tellraw @a {}'.format(json.dumps([
+		'',
+		'§e{}§r @ '.format(name),
+		dimension_color[dimension],  # hacky fix for voxelmap yeeting text color in translated text 
+		dimension_display[dimension],
+		position_display()
+	])))
 	global HIGHLIGHT_TIME
-	dimension_display = {0: '"translate":"createWorld.customize.preset.overworld","color":"dark_green"', -1: '"translate":"advancements.nether.root.title","color":"dark_red"', 1: '"translate":"advancements.end.root.title","color":"dark_purple"', 'minecraft:overworld': '"translate":"createWorld.customize.preset.overworld","color":"dark_green"', 'minecraft:the_nether': '"translate":"advancements.nether.root.title","color":"dark_red"', 'minecraft:the_end': '"translate":"advancements.end.root.title","color":"dark_purple"'}
-	position_show = '[x:{}, y:{}, z:{}]'.format(*position)
-	server.execute('tellraw @a ["",{"text":"' + name + ' ","color":"yellow"},{"text":"@ ","color":"white"},{' + dimension_display[dimension] + '},{"text":" ' + position_show + '","color":"aqua"}]')
 	if HIGHLIGHT_TIME > 0:
 		server.execute('effect give {} minecraft:glowing {} 0 true'.format(name, HIGHLIGHT_TIME))
-		server.tell(name, '你将会被高亮{}秒'.format(HIGHLIGHT_TIME))
 
 
 def on_info(server, info):
