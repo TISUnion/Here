@@ -18,7 +18,7 @@ def process_coordinate(text):
 
 
 def process_dimension(text):
-	return int(text.lstrip(re.match(r'[\w ]+: ', text).group()))
+	return text.lstrip(re.match(r'[\w ]+: ', text).group())
 
 
 def display(server, name, position, dimension):
@@ -38,8 +38,7 @@ def display(server, name, position, dimension):
 		'-1': {'translate': 'advancements.nether.root.title'},
 		'1': {'translate': 'advancements.end.root.title'}
 	}
-	
-	if dimension in dimension_convert:  # convert to 1.16 format
+	if dimension in dimension_convert:  # convert from 1.16 format to pre 1.16 format
 		dimension = dimension_convert[dimension]
 	texts = [
 		'',
@@ -51,7 +50,6 @@ def display(server, name, position, dimension):
 	if dimension in ['0', '-1']:  # coordinate convertion between overworld and nether
 		dimension_opposite = '-1' if dimension == '0' else '0'
 		x, z = (x / 8, z / 8) if dimension == '0' else (x * 8, z * 8)
-		dimension_color[dimension_opposite],
 		texts.extend([
 			' §7->§r ',
 			dimension_color[dimension_opposite],
@@ -65,6 +63,7 @@ def display(server, name, position, dimension):
 
 
 def on_info(server, info):
+	global here_user
 	if info.is_player and info.content == '!!here':
 		if hasattr(server, 'MCDR') and server.is_rcon_running():
 			name = info.player
@@ -72,7 +71,6 @@ def on_info(server, info):
 			dimension = process_dimension(server.rcon_query('data get entity {} Dimension'.format(name)))
 			display(server, name, position, dimension)
 		else:
-			global here_user
 			here_user += 1
 			server.execute('data get entity ' + info.player)
 	if not info.is_player and here_user > 0 and re.match(r'\w+ has the following entity data: ', info.content) is not None:
