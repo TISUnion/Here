@@ -42,7 +42,15 @@ def display(server, name, position, dimension):
 		dimension = dimension_convert[dimension]
 	texts = [
 		'',
-		'§e{}§r @ '.format(name),
+		{
+			'text': '§e{}'.format(name),
+			'clickEvent':
+			{
+				'action': 'run_command',
+				'value': '/execute at {0} run tp {0}'.format(name)
+			}
+		},
+		'§r @ ',
 		dimension_color[dimension],  # hacky fix for voxelmap yeeting text color in translated text 
 		dimension_display[dimension],
 		' §b[x:{}, y:{}, z:{}]§r'.format(int(x), int(y), int(z))
