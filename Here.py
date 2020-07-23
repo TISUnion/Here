@@ -18,7 +18,7 @@ def process_coordinate(text):
 
 
 def process_dimension(text):
-	return text.lstrip(re.match(r'[\w ]+: ', text).group())
+	return text.replace(re.match(r'[\w ]+: ', text).group(), '', 1)
 
 
 def display(server, name, position, dimension):
