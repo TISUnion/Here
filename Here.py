@@ -25,8 +25,11 @@ def display(server, name, position, dimension):
 	x, y, z = position
 	dimension_convert = {
 		'minecraft:overworld': '0',
+        	'"minecraft:overworld"': '0',
 		'minecraft:the_nether': '-1',
-		'minecraft:the_end': '1'
+		'"minecraft:the_nether"': '-1',
+		'minecraft:the_end': '1',
+		'"minecraft:the_end"': '1'
 	}
 	dimension_color = {
 		'0': '§2',
