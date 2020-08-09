@@ -34,12 +34,12 @@ def display(server, name, position, dimension):
 	dimension_color = {
 		'0': '§2',
 		'-1': '§4',
-		'1': '§5',
+		'1': '§5'
 	}
 	dimension_display = {
 		'0': {'translate': 'createWorld.customize.preset.overworld'},
 		'-1': {'translate': 'advancements.nether.root.title'},
-		'1': {'translate': 'advancements.end.root.title'},
+		'1': {'translate': 'advancements.end.root.title'}
 	}
 	if dimension in dimension_convert:  # convert from 1.16 format to pre 1.16 format
 		dimension = dimension_convert[dimension]
