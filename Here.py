@@ -1,8 +1,17 @@
 # -*- coding: utf-8 -*-
-import copy
-import re
 import json
+import re
 
+PLUGIN_METADATA = {
+	'id': 'here',
+	'version': '1.0.0',
+	'name': 'Carpet Feature Helper',
+	'author': [
+		'Fallen_Breath',
+		'nathan21hz'
+   ],
+	'link': 'https://github.com/TISUnion/Here'
+}
 
 # set it to 0 to disable hightlight
 # 将其设为0以禁用高亮
@@ -25,7 +34,7 @@ def display(server, name, position, dimension):
 	x, y, z = position
 	dimension_convert = {
 		'minecraft:overworld': '0',
-        	'"minecraft:overworld"': '0',
+		'"minecraft:overworld"': '0',
 		'minecraft:the_nether': '-1',
 		'"minecraft:the_nether"': '-1',
 		'minecraft:the_end': '1',
@@ -93,11 +102,5 @@ def on_info(server, info):
 		here_user -= 1
 
 
-def onServerInfo(server, info):
-	info2 = copy.deepcopy(info)
-	info2.is_player = info2.isPlayer
-	on_info(server, info2)
-
-
 def on_load(server, old):
-	server.add_help_message('!!here', '广播坐标并高亮玩家')
+	server.register_help_message('!!here', '广播坐标并高亮玩家')
