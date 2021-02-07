@@ -5,7 +5,7 @@ import re
 PLUGIN_METADATA = {
 	'id': 'here',
 	'version': '1.0.0',
-	'name': 'Carpet Feature Helper',
+	'name': 'Here',
 	'author': [
 		'Fallen_Breath',
 		'nathan21hz'
