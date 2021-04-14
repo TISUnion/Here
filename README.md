@@ -1,7 +1,7 @@
 Here
 -------
 
-一个 兼容 [MCDaemon](https://github.com/kafuuchino-desu/MCDaemon) 以及 [MCDReforged](https://github.com/Fallen-Breath/MCDReforged) 的插件
+一个 [MCDReforged](https://github.com/Fallen-Breath/MCDReforged) 的插件
 
 当玩家输入 `!!here` 时，玩家的坐标将被显示并且将被发光效果高亮
 
