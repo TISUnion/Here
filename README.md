@@ -13,4 +13,4 @@ Here
 
 当 MCDR 启动 rcon 时此插件可使用 rcon 来获得玩家信息，响应更快
 
-![example](./img.png)
+![example](https://raw.githubusercontent.com/TISUnion/Here/MCDR/img.png)
