@@ -121,7 +121,6 @@ def display(server: ServerInterface, name: str, position: str, dimension: str):
 		)
 	
 	if dimension in ['0', '-1']:  # coordinate convertion between overworld and nether
-		
 		texts.append(
 			' §7->§r ',
 			coordinate_text(x, y, z, dimension, opposite=True)
