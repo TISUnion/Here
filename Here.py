@@ -74,7 +74,7 @@ def coordinate_text(x: str, y: str, z: str, dimension: str, opposite=False):
 	dim_text = RTextTranslation(dimension_display[dimension], color=dimension_color[dimension])
 
 	return pattern.h(dim_text) if not CLICK_TO_TP else pattern.h(
-		dim_text + ': 点击以传送到' + RText(pattern.to_plain_text(), dimension_coordinate_color[dimension])
+		dim_text + ': 点击以传送到' + pattern.copy()
 		).c(RAction.suggest_command, 
 		'/execute in {} run tp {} {} {}'.format(dimension_name[dimension], int(x), int(y), int(z)))
 
