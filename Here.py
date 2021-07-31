@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 import re
-import json
 
 from mcdreforged.api.rtext import *
 from mcdreforged.api.types import ServerInterface, Info
 
 PLUGIN_METADATA = {
 	'id': 'here',
-	'version': '1.1.0-alpha1',
+	'version': '1.1.0-alpha2',
 	'name': 'Here',
 	'author': [
 		'Fallen_Breath',
@@ -25,8 +24,24 @@ HIGHLIGHT_TIME = 15
 XAERO_WAYPOINT = True
 VOXEL_WAYPOINT = True
 
+# set it to True to enable click to teleport
+# 将其设为True以允许玩家点击传送
+CLICK_TO_TP = False
+
 
 here_user = 0
+
+dimension_display = {
+		'0': 'createWorld.customize.preset.overworld',
+		'-1': 'advancements.nether.root.title',
+		'1': 'advancements.end.root.title'
+	}
+
+dimension_color = {
+		'0': RColor.dark_green,
+		'-1': RColor.dark_red,
+		'1': RColor.dark_purple
+	}
 
 
 def process_coordinate(text: str) -> tuple:
@@ -39,6 +54,32 @@ def process_dimension(text: str) -> str:
 	return text.replace(re.match(r'[\w ]+: ', text).group(), '', 1)
 
 
+def coordinate_text(x: str, y: str, z: str, dimension: str, opposite=False):
+	dimension_coordinate_color = {
+		'0': RColor.green,
+		'-1': RColor.red,
+		'1': RColor.light_purple
+	}
+	dimension_name = {
+		'0': 'minecraft:overworld',
+		'1': 'minecraft:the_end',
+		'-1': 'minecraft:the_nether'
+	}
+
+	if opposite:
+		dimension = '-1' if dimension == '0' else '0'
+		x, z = (x / 8, z / 8) if dimension == '-1' else (x * 8, z * 8)
+
+	pattern = RText('[{}, {}, {}]'.format(int(x), int(y), int(z)), dimension_coordinate_color[dimension])
+	dim_text = RTextTranslation(dimension_display[dimension], color=dimension_color[dimension])
+
+	return pattern.h(dim_text) if not CLICK_TO_TP else pattern.h(
+		dim_text + ': 点击以传送到' + RText(pattern.to_plain_text(), dimension_coordinate_color[dimension])
+		).c(RAction.suggest_command, 
+		'/execute in {} run tp {} {} {}'.format(dimension_name[dimension], int(x), int(y), int(z)))
+
+
+
 def display(server: ServerInterface, name: str, position: str, dimension: str):
 	x, y, z = position
 	dimension_convert = {
@@ -49,21 +90,7 @@ def display(server: ServerInterface, name: str, position: str, dimension: str):
 		'minecraft:the_end': '1',
 		'"minecraft:the_end"': '1'
 	}
-	dimension_color = {
-		'0': RColor.dark_green,
-		'-1': RColor.dark_red,
-		'1': RColor.dark_purple
-	}
-	dimension_coordinate_color = {
-		'0': RColor.green,
-		'-1': RColor.red,
-		'1': RColor.light_purple
-	}
-	dimension_display = {
-		'0': 'createWorld.customize.preset.overworld',
-		'-1': 'advancements.nether.root.title',
-		'1': 'advancements.end.root.title'
-	}
+	
 	if dimension in dimension_convert:  # convert from 1.16 format to pre 1.16 format
 		dimension = dimension_convert[dimension]
 
@@ -72,7 +99,8 @@ def display(server: ServerInterface, name: str, position: str, dimension: str):
 		'§e{}§r'.format(name),
 		' @ ',
 		RTextTranslation(dimension_display[dimension], color=dimension_color[dimension]),
-		RText(' [{}, {}, {}]'.format(int(x), int(y), int(z)), dimension_coordinate_color[dimension])
+		' ',
+		coordinate_text(x, y, z, dimension)
 	)
 
 	# click event to add waypoint
@@ -93,14 +121,11 @@ def display(server: ServerInterface, name: str, position: str, dimension: str):
 		)
 	
 	if dimension in ['0', '-1']:  # coordinate convertion between overworld and nether
-		dimension_opposite = '-1' if dimension == '0' else '0'
-		x, z = (x / 8, z / 8) if dimension == '0' else (x * 8, z * 8)
+		
 		texts.append(
 			' §7->§r ',
-			RText('[{}, {}, {}]'.format(int(x), int(y), int(z)), dimension_coordinate_color[dimension_opposite]).h(
-				RTextTranslation(dimension_display[dimension_opposite], color=dimension_color[dimension_opposite])
+			coordinate_text(x, y, z, dimension, opposite=True)
 			)
-		)
 
 	server.say(texts)
 

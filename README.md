@@ -11,6 +11,8 @@ Here
 
 或`XAERO_WAYPOINT`设置为`True`以显示一小段含点击事件的文本，点击以添加坐标点至Xaero's Minimap
 
+将代码中的`CLICK_TO_TP`设为`True`以让显示的坐标可以让玩家点击传送到该位置（实为补全完整的传送命令，由玩家自行执行，以减少或避免非OP传送或意外点击传送等问题）
+
 当 MCDR 启动 rcon 时此插件可使用 rcon 来获得玩家信息，响应更快
 
 ![example](https://raw.githubusercontent.com/TISUnion/Here/MCDR/img.png)
