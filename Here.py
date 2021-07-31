@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 import re
+import os
+import json
 
+from typing import Any
 from mcdreforged.api.rtext import *
 from mcdreforged.api.types import ServerInterface, Info
 
 PLUGIN_METADATA = {
 	'id': 'here',
-	'version': '1.1.0-alpha2',
+	'version': '1.1.0-alpha3',
 	'name': 'Here',
 	'author': [
 		'Fallen_Breath',
@@ -15,19 +18,18 @@ PLUGIN_METADATA = {
 	'link': 'https://github.com/TISUnion/Here'
 }
 
-# set it to 0 to disable hightlight
-# 将其设为0以禁用高亮
-HIGHLIGHT_TIME = 15
+# Configuration file path
+# 配置文件路径
+CONFIG_FILE = 'config/here.json'
 
-# set it to True to enable Xaero's Minimap waypoint
-# 将其设为True以显示Xaero的小地图/Voxelmap的路径点
-XAERO_WAYPOINT = True
-VOXEL_WAYPOINT = True
-
-# set it to True to enable click to teleport
-# 将其设为True以允许玩家点击传送
-CLICK_TO_TP = False
-
+# DO NOT change here!!! If you need to change the config value, pls change this in config file
+# 这里别动！！！要改配置去配置文件里改
+default_config = {
+	'highlight_time': 15,
+	'display_voxel_waypoint': True,
+	'display_xaero_waypoint': True,
+	'click_to_teleport': False
+}
 
 here_user = 0
 
@@ -42,6 +44,45 @@ dimension_color = {
 		'-1': RColor.dark_red,
 		'1': RColor.dark_purple
 	}
+
+
+class Config:
+	def __init__(self, file: str) -> None:
+		self.file = file
+		self.data = {}
+
+	def __write_config(self, new_data = None):
+		if isinstance(new_data, dict):
+			self.data.update(new_data)
+		with open(self.file, 'w', encoding='UTF-8') as f:
+			json.dump(self.data, f, indent=4)
+
+	def __get_config(self):
+		with open(self.file, 'r', encoding='UTF-8') as f:
+			self.data.update(json.load(f))
+
+	def load(self, server: ServerInterface):
+		if not os.path.isdir(os.path.dirname(self.file)):
+			os.makedirs(os.path.dirname)
+			server.logger.info('Config directory not found, created')
+		if not os.path.isfile(self.file):
+			self.__write_config(default_config)
+			server.logger.info('Config file not found, using default')
+		else:
+			try:
+				self.__get_config()
+			except json.JSONDecodeError:
+				self.__write_config(default_config)
+				server.logger.info('Invalid config file, using default')
+
+	def __getitem__(self, key: str) -> Any:
+		ret = self.data.get(key)
+		if ret == None and key in default_config.keys():
+			ret = default_config[key]
+			self.__write_config({key: ret})
+		return ret
+
+config = Config(CONFIG_FILE)
 
 
 def process_coordinate(text: str) -> tuple:
@@ -73,11 +114,10 @@ def coordinate_text(x: str, y: str, z: str, dimension: str, opposite=False):
 	pattern = RText('[{}, {}, {}]'.format(int(x), int(y), int(z)), dimension_coordinate_color[dimension])
 	dim_text = RTextTranslation(dimension_display[dimension], color=dimension_color[dimension])
 
-	return pattern.h(dim_text) if not CLICK_TO_TP else pattern.h(
+	return pattern.h(dim_text) if not config['click_to_teleport'] else pattern.h(
 		dim_text + ': 点击以传送到' + pattern.copy()
 		).c(RAction.suggest_command, 
 		'/execute in {} run tp {} {} {}'.format(dimension_name[dimension], int(x), int(y), int(z)))
-
 
 
 def display(server: ServerInterface, name: str, position: str, dimension: str):
@@ -104,23 +144,21 @@ def display(server: ServerInterface, name: str, position: str, dimension: str):
 	)
 
 	# click event to add waypoint
-	if VOXEL_WAYPOINT:
+	if config['display_voxel_waypoint']:
 		texts.append( ' ',
 			RText('[+V]', RColor.aqua).h('§bVoxelmap§r: 点此以高亮坐标点, 或者Ctrl点击添加路径点').c(
 				RAction.run_command, '/newWaypoint [x:{}, y:{}, z:{}, dim:{}]'.format(
 					int(x), int(y), int(z), dimension
-				))
-			)
-	if XAERO_WAYPOINT:
+				)))
+	if config['display_xaero_waypoint']:
 		texts.append( ' ',
 			RText('[+X]', RColor.gold).h('§6Xaeros Minimap§r: 点击添加路径点').c(
 				RAction.run_command, 'xaero_waypoint_add:{}:{}:{}:{}:{}:6:false:0:Internal_{}_waypoints'.format(
 					name + "'s Location", name[0], int(x), int(y), int(z), dimension.replace('minecraft:', '').strip()
-				)
-			)
-		)
-	
-	if dimension in ['0', '-1']:  # coordinate convertion between overworld and nether
+				)))
+
+	# coordinate convertion between overworld and nether
+	if dimension in ['0', '-1']:
 		texts.append(
 			' §7->§r ',
 			coordinate_text(x, y, z, dimension, opposite=True)
@@ -129,9 +167,8 @@ def display(server: ServerInterface, name: str, position: str, dimension: str):
 	server.say(texts)
 
 	# highlight
-	global HIGHLIGHT_TIME
-	if HIGHLIGHT_TIME > 0:
-		server.execute('effect give {} minecraft:glowing {} 0 true'.format(name, HIGHLIGHT_TIME))
+	if config['highlight_time'] > 0:
+		server.execute('effect give {} minecraft:glowing {} 0 true'.format(name, config['highlight_time']))
 
 
 def on_info(server: ServerInterface, info: Info):
@@ -156,3 +193,4 @@ def on_info(server: ServerInterface, info: Info):
 
 def on_load(server: ServerInterface, old):
 	server.register_help_message('!!here', '广播坐标并高亮玩家')
+	config.load(server)
