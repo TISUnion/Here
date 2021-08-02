@@ -174,7 +174,7 @@ def display(server: ServerInterface, name: str, position: str, dimension: str):
 def on_info(server: ServerInterface, info: Info):
 	global here_user
 	if info.is_player and info.content == '!!here':
-		if hasattr(server, 'MCDR') and server.is_rcon_running():
+		if hasattr(server, 'MCDR') and server.is_rcon_running() and not config['disable_rcon']:
 			name = info.player
 			position = process_coordinate(re.search(r'\[.*\]', server.rcon_query('data get entity {} Pos'.format(name))).group())
 			dimension = process_dimension(server.rcon_query('data get entity {} Dimension'.format(name)))
