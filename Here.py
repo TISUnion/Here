@@ -1,9 +1,8 @@
-# -*- coding: utf-8 -*-
-import re
-import os
 import json
+import os
+import re
+from typing import Any, Tuple
 
-from typing import Any
 from mcdreforged.api.rtext import *
 from mcdreforged.api.types import ServerInterface, Info
 
@@ -13,8 +12,9 @@ PLUGIN_METADATA = {
 	'name': 'Here',
 	'author': [
 		'Fallen_Breath',
-		'nathan21hz'
-   ],
+		'nathan21hz',
+		'Ra1ny_Yuki'
+	],
 	'link': 'https://github.com/TISUnion/Here'
 }
 
@@ -34,16 +34,16 @@ default_config = {
 here_user = 0
 
 dimension_display = {
-		'0': 'createWorld.customize.preset.overworld',
-		'-1': 'advancements.nether.root.title',
-		'1': 'advancements.end.root.title'
-	}
+	'0': 'createWorld.customize.preset.overworld',
+	'-1': 'advancements.nether.root.title',
+	'1': 'advancements.end.root.title'
+}
 
 dimension_color = {
-		'0': RColor.dark_green,
-		'-1': RColor.dark_red,
-		'1': RColor.dark_purple
-	}
+	'0': RColor.dark_green,
+	'-1': RColor.dark_red,
+	'1': RColor.dark_purple
+}
 
 
 class Config:
@@ -63,7 +63,7 @@ class Config:
 
 	def load(self, server: ServerInterface):
 		if not os.path.isdir(os.path.dirname(self.file)):
-			os.makedirs(os.path.dirname)
+			os.makedirs(os.path.dirname(self.file))
 			server.logger.info('Config directory not found, created')
 		if not os.path.isfile(self.file):
 			self.__write_config(default_config)
@@ -77,10 +77,11 @@ class Config:
 
 	def __getitem__(self, key: str) -> Any:
 		ret = self.data.get(key)
-		if ret == None and key in default_config.keys():
+		if ret is None and key in default_config.keys():
 			ret = default_config[key]
 			self.__write_config({key: ret})
 		return ret
+
 
 config = Config(CONFIG_FILE)
 
@@ -95,7 +96,7 @@ def process_dimension(text: str) -> str:
 	return text.replace(re.match(r'[\w ]+: ', text).group(), '', 1)
 
 
-def coordinate_text(x: str, y: str, z: str, dimension: str, opposite=False):
+def coordinate_text(x: float, y: float, z: float, dimension: str, opposite=False):
 	dimension_coordinate_color = {
 		'0': RColor.green,
 		'-1': RColor.red,
@@ -120,7 +121,7 @@ def coordinate_text(x: str, y: str, z: str, dimension: str, opposite=False):
 		'/execute in {} run tp {} {} {}'.format(dimension_name[dimension], int(x), int(y), int(z)))
 
 
-def display(server: ServerInterface, name: str, position: str, dimension: str):
+def display(server: ServerInterface, name: str, position: Tuple[float, float, float], dimension: str):
 	x, y, z = position
 	dimension_convert = {
 		'minecraft:overworld': '0',
@@ -157,7 +158,7 @@ def display(server: ServerInterface, name: str, position: str, dimension: str):
 					name + "'s Location", name[0], int(x), int(y), int(z), dimension.replace('minecraft:', '').strip()
 				)))
 
-	# coordinate convertion between overworld and nether
+	# coordinate conversion between overworld and nether
 	if dimension in ['0', '-1']:
 		texts.append(
 			' §7->§r ',
