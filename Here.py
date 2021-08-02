@@ -8,7 +8,7 @@ from mcdreforged.api.types import ServerInterface, Info
 
 PLUGIN_METADATA = {
 	'id': 'here',
-	'version': '1.1.0-alpha3',
+	'version': '1.1.0',
 	'name': 'Here',
 	'author': [
 		'Fallen_Breath',
