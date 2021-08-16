@@ -1,0 +1,15 @@
+{
+	"id": "here",
+	"version": "1.1.0",
+	"name": "Here",
+	"description": {
+		"en_us": "Broadcast your position and high light yourself",
+		"zh_cn": "一显示坐标并高亮玩家"
+	},
+	"author": [
+		"Fallen_Breath",
+		"nathan21hz",
+		"Ra1ny_Yuki"
+	],
+	"link": "https://github.com/TISUnion/Here"
+}
