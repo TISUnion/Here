@@ -1,9 +1,9 @@
 import re
-from typing import Tuple
 
 from mcdreforged.api.all import *
 
 from here.dimension import get_dimension, Dimension, LegacyDimension
+from here.position import Position
 
 
 class Config(Serializable):
@@ -19,10 +19,11 @@ CONFIG_FILE = 'config/here.json'
 here_user = 0
 
 
-def process_coordinate(text: str) -> tuple:
+def process_coordinate(text: str) -> Position:
 	data = text[1:-1].replace('d', '').split(', ')
 	data = [(x + 'E0').split('E') for x in data]
-	return tuple([float(e[0]) * 10 ** int(e[1]) for e in data])
+	assert len(data) == 3
+	return Position(*[float(e[0]) * 10 ** int(e[1]) for e in data])
 
 
 def process_dimension(text: str) -> str:
@@ -40,7 +41,7 @@ def coordinate_text(x: float, y: float, z: float, dimension: Dimension):
 		return coord.h(dimension.get_rtext())
 
 
-def __display(server: ServerInterface, name: str, position: Tuple[float, float, float], dimension_str: str):
+def __display(server: ServerInterface, name: str, position: Position, dimension_str: str):
 	x, y, z = position
 	dimension = get_dimension(dimension_str)
 
@@ -62,12 +63,12 @@ def __display(server: ServerInterface, name: str, position: Tuple[float, float, 
 
 	# coordinate conversion between overworld and nether
 	if dimension.has_opposite():
-		oppo_dim = dimension.get_opposite()
+		oppo_dim, oppo_pos = dimension.get_opposite(position)
 		arrow = RText('->', RColor.gray)
 		texts.append(RText.format(
 			' {} {}',
 			arrow.copy().h(RText.format('{} {} {}', dimension.get_rtext(), arrow, oppo_dim.get_rtext())),
-			coordinate_text(x, y, z, oppo_dim)
+			coordinate_text(oppo_pos.x, oppo_pos.y, oppo_pos.z, oppo_dim)
 		))
 
 	server.say(texts)
@@ -77,7 +78,7 @@ def __display(server: ServerInterface, name: str, position: Tuple[float, float, 
 		server.execute('effect give {} minecraft:glowing {} 0 true'.format(name, config.highlight_time))
 
 
-def display(server: ServerInterface, name: str, position: Tuple[float, float, float], dimension_str: str):
+def display(server: ServerInterface, name: str, position: Position, dimension_str: str):
 	try:
 		__display(server, name, position, dimension_str)
 	except:

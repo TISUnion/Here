@@ -1,6 +1,9 @@
 from abc import ABC
+from typing import Tuple
 
 from mcdreforged.api.all import *
+
+from here.position import Position
 
 OVERWORLD = 'minecraft:overworld'
 NETHER = 'minecraft:the_nether'
@@ -40,7 +43,7 @@ class Dimension(ABC):
 	def has_opposite(self) -> bool:
 		raise NotImplementedError()
 
-	def get_opposite(self) -> 'Dimension':
+	def get_opposite(self, pos: Position) -> Tuple['Dimension', Position]:
 		raise NotImplementedError()
 
 
@@ -65,10 +68,14 @@ class LegacyDimension(Dimension):
 	def has_opposite(self) -> bool:
 		return self.dim_id in (0, -1)
 
-	def get_opposite(self) -> 'Dimension':
+	def get_opposite(self, pos: Position) -> Tuple['Dimension', Position]:
 		# 0 -> -1
 		# -1 -> 0
-		return LegacyDimension(-1 - self.dim_id)
+		if self.dim_id == 0:  # overworld
+			return LegacyDimension(-1), Position(pos.x / 8, pos.y, pos.z / 8)
+		elif self.dim_id == -1:  # nether
+			return LegacyDimension(0), Position(pos.x * 8, pos.y, pos.z * 8)
+		raise RuntimeError('Legacy dimension -1 (the end) does not have opposite dimension')
 
 
 class CustomDimension(Dimension):
@@ -87,7 +94,7 @@ class CustomDimension(Dimension):
 	def has_opposite(self) -> bool:
 		return False
 
-	def get_opposite(self) -> 'Dimension':
+	def get_opposite(self, pos: Position) -> Tuple['Dimension', Position]:
 		raise RuntimeError('Custom dimension {} does not have opposite dimension'.format(self.reg_key))
 
 
