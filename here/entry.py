@@ -27,7 +27,7 @@ def process_coordinate(text: str) -> Position:
 
 
 def process_dimension(text: str) -> str:
-	return text.replace(re.match(r'[\w ]+: ', text).group(), '', 1)
+	return text.replace(re.match(r'[\w ]+: ', text).group(), '', 1).strip('"\' ')
 
 
 def coordinate_text(x: float, y: float, z: float, dimension: Dimension):
@@ -98,7 +98,7 @@ def on_info(server: PluginServerInterface, info: Info):
 			server.execute('data get entity ' + info.player)
 	if not info.is_player and here_user > 0 and re.match(r'\w+ has the following entity data: ', info.content) is not None:
 		name = info.content.split(' ')[0]
-		dimension = re.search(r'(?<= Dimension: )(.*?),', info.content).group().replace('"', '').replace(',', '')
+		dimension = re.search(r'(?<= Dimension: )(.*?),', info.content).group().replace('"', '').replace("'", '').replace(',', '')
 		position_str = re.search(r'(?<=Pos: )\[.*?]', info.content).group()
 		position = process_coordinate(position_str)
 		display(server, name, position, dimension)
