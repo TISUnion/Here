@@ -3,6 +3,8 @@ Here
 
 一个 [MCDReforged](https://github.com/Fallen-Breath/MCDReforged) 的插件
 
+适用版本：1.13 以上服务器
+
 ## 命令
 
 `!!here`：显示玩家坐标并使其发光
