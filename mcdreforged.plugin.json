@@ -1,7 +1,7 @@
 {
 	"id": "here",
-	"version": "1.2.2",
-	"name": "Here",
+	"version": "1.3.0",
+	"name": "Here vris&'BOT'prefix-supported",
 	"description": {
 		"en_us": "Broadcast your position and high light yourself",
 		"zh_cn": "显示坐标并高亮玩家 添加了vris功能 添加了对带[BOT]前缀的玩家(假人)查询支持"
@@ -13,7 +13,7 @@
 		"tanh_Heng"
 	],
 	"entrypoint": "here.entry",
-	"link": "https://github.com/tanhHeng/Here/tree/vris%26%22BOT%5D%22prefix-supported",
+	"link": "https://github.com/tanhHeng/Here",
 	"resources": [
 		"LICENSE"
 	]
