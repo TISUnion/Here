@@ -4,15 +4,16 @@
 	"name": "Here",
 	"description": {
 		"en_us": "Broadcast your position and high light yourself",
-		"zh_cn": "显示坐标并高亮玩家"
+		"zh_cn": "显示坐标并高亮玩家 添加了vris功能 添加了对带[BOT]前缀的玩家(假人)查询支持"
 	},
 	"author": [
 		"Fallen_Breath",
 		"nathan21hz",
-		"Ra1ny_Yuki"
+		"Ra1ny_Yuki",
+		"tanh_Heng"
 	],
 	"entrypoint": "here.entry",
-	"link": "https://github.com/TISUnion/Here",
+	"link": "https://github.com/tanhHeng/Here/tree/vris%26%22BOT%5D%22prefix-supported",
 	"resources": [
 		"LICENSE"
 	]
