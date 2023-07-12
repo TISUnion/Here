@@ -87,22 +87,33 @@ def display(server: ServerInterface, name: str, position: Position, dimension_st
 
 def on_info(server: PluginServerInterface, info: Info):
 	global here_user
-	if info.is_player and info.content == '!!here':
-		if server.is_rcon_running() and config.use_rcon_if_possible:
+	if info.is_player:
+		name = None
+		if info.content == '!!here':
 			name = info.player
-			position = process_coordinate(re.search(r'\[.*]', server.rcon_query('data get entity {} Pos'.format(name))).group())
-			dimension = process_dimension(server.rcon_query('data get entity {} Dimension'.format(name)))
+		elif info.content[:6] == "!!vris":
+			if info.content[6] == " ":
+				name = info.content.split(" ")[1]
+		if name:
+			if server.is_rcon_running() and config.use_rcon_if_possible:
+				name = info.player
+				position = process_coordinate(re.search(r'\[.*]', server.rcon_query('data get entity {} Pos'.format(name))).group())
+				dimension = process_dimension(server.rcon_query('data get entity {} Dimension'.format(name)))
+				display(server, name, position, dimension)
+			else:
+				here_user += 1
+				server.execute('data get entity ' + info.player)
+	if not info.is_player and here_user > 0:
+		content = info.content
+		re_match = re.match(r"(?:\[BOT])?(\w+) has the following entity data: ", content)
+		if re_match is not None:
+			name = re_match.groups()[0]
+			name = info.content.split(' ')[0]
+			dimension = re.search(r'(?<= Dimension: )(.*?),', info.content).group().replace('"', '').replace("'", '').replace(',', '')
+			position_str = re.search(r'(?<=Pos: )\[.*?]', info.content).group()
+			position = process_coordinate(position_str)
 			display(server, name, position, dimension)
-		else:
-			here_user += 1
-			server.execute('data get entity ' + info.player)
-	if not info.is_player and here_user > 0 and re.match(r'\w+ has the following entity data: ', info.content) is not None:
-		name = info.content.split(' ')[0]
-		dimension = re.search(r'(?<= Dimension: )(.*?),', info.content).group().replace('"', '').replace("'", '').replace(',', '')
-		position_str = re.search(r'(?<=Pos: )\[.*?]', info.content).group()
-		position = process_coordinate(position_str)
-		display(server, name, position, dimension)
-		here_user -= 1
+			here_user -= 1
 
 
 def on_load(server: PluginServerInterface, old):
