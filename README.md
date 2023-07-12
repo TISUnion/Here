@@ -9,6 +9,16 @@ Here
 
 `!!here`：显示玩家坐标并使其发光
 
+`!!vris <player>`：显示玩家<player>的坐标并使其发光 **(NEW)**
+
+## 修复
+
+以下修复内容皆相对于WhereIs插件 https://github.com/Lazy-Bing-Server/WhereIs-MCDR/releases ，且仅限不开启rcon（未测试开启rcon）
+
+- 修复了当使用`!!vris`功能时，如果被查询的玩家(假人)带有"[BOT]"前缀 *(如[BOT]bot_sleep)*，无法正常查询并高亮的问题
+
+- 修复了高亮坐标点时，出现/execute指令的问题
+
 ## 配置文件
 
 部分特性可由配置文件控制，默认自动生成于 `config/here.json`。
