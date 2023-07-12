@@ -5,13 +5,13 @@ Here
 
 适用版本：1.13 以上服务器
 
-## 命令
+## 命令(NEW)
 
 `!!here`：显示玩家坐标并使其发光
 
 `!!vris <player>`：显示玩家<player>的坐标并使其发光 **(NEW)**
 
-## 修复
+## 修复(FIXED)
 
 以下修复内容皆相对于WhereIs插件 https://github.com/Lazy-Bing-Server/WhereIs-MCDR/releases ，且仅限不开启rcon（未测试开启rcon）
 
@@ -37,6 +37,6 @@ Here
 
 当 MCDR 启动 rcon 时，此插件可使用 rcon 来获得玩家信息，响应更快。
 
-## 效果
+## 效果(NEW)
 
 ![example](./img.png)
