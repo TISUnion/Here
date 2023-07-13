@@ -5,6 +5,8 @@ Here
 
 适用版本：1.13 以上服务器
 
+可搭配 <a href="https://github.com/tanhHeng/AutoBOTPrefix">AutoBOTPrefix 自动添加BOT前缀</a> 使用
+
 ## 命令(NEW)
 
 `!!here`：显示玩家坐标并使其发光
