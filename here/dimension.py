@@ -60,7 +60,7 @@ class LegacyDimension(Dimension):
 
 	def get_rtext(self) -> RTextBase:
 		return RTextTranslation({
-			0: 'createWorld.customize.preset.overworld',
+			0: 'flat_world_preset.minecraft.overworld',
 			-1: 'advancements.nether.root.title',
 			1: 'advancements.end.root.title'
 		}[self.dim_id]).set_color(self.get_color())
